@@ -1,4 +1,4 @@
-# Alien Invaders! is a two-player game that allows Player 1 to use the WASD keys and Player 2 to use
+# Alien Invasion! is a two-player game that allows Player 1 to use the WASD keys and Player 2 to use
 # the UP, DOWN, LEFT, and RIGHT arrow keys to control their respective Aliens in order to invade Earth.
 # Players can increase their score by navigating through asteroid objects and reaching the Earth.
 
@@ -21,7 +21,7 @@ background = pygame.image.load('gameAssets/spaceBackground.png')
 asteroid = pygame.image.load('gameAssets/asteroid.png')
 alien = pygame.image.load('gameAssets/alien.png')
 music = pygame.mixer.music.load('gameAssets/spaceMusic.mp3')
-pygame.mixer.music.play(-1)
+pygame.mixer.music.play(-1) # using -1 here loops the music infinitely
 
 gameClock = pygame.time.Clock()
 gameWindow = pygame.display.set_mode((screenWidth, screenHeight))

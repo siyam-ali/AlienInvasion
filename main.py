@@ -20,6 +20,8 @@ windowIcon = pygame.image.load('gameAssets/icon.png')
 background = pygame.image.load('gameAssets/spaceBackground.png')
 asteroid = pygame.image.load('gameAssets/asteroid.png')
 alien = pygame.image.load('gameAssets/alien.png')
+alien2 = pygame.image.load('gameAssets/alien2.png')
+trophy = pygame.image.load('gameAssets/trophy.png')
 music = pygame.mixer.music.load('gameAssets/spaceMusic.mp3')
 pygame.mixer.music.play(-1) # using -1 here loops the music infinitely
 
@@ -50,10 +52,10 @@ class Player(Collision):
 
     # init method initializes player's x and y position, and dimension of player
 
-    def __init__(self, x):
+    def __init__(self, x, alien):
         self.x = x
         self.y = initialYPosition
-        self.width = 50
+        self.width = 100
         self.height = 100
         self.yVelocity = 0
         self.xVelocity = 0
@@ -70,7 +72,7 @@ class Player(Collision):
         self.x = self.x + self.xVelocity
 
     def increaseScore(self):
-        if self.y <= 100 and 350 <= self.x <= 450:
+        if 10 <= self.y <= 100 and 290 <= self.x <= 450:
             self.score = self.score + 1
             self.y = initialYPosition
 
@@ -109,22 +111,23 @@ def drawGame():
 
     scoreFont = pygame.font.SysFont('geneva', 50)
     player1Score = scoreFont.render(str(player1.score), 1, (0, 128, 0))
-    player2Score = scoreFont.render(str(player2.score), 1, (0, 128, 0))
-    gameWindow.blit(player1Score, (184 - player1Score.get_width()/2, 730))
-    gameWindow.blit(player2Score, (600 - player2Score.get_width()/2, 730))
+    player2Score = scoreFont.render(str(player2.score), 1, (255, 0, 0))
+    gameWindow.blit(player1Score, (210 - player1Score.get_width()/2, 730))
+    gameWindow.blit(player2Score, (625 - player2Score.get_width()/2, 730))
 
     pygame.display.update()
 
 
 
-player1 = Player(160)
-player2 = Player(575)
+player1 = Player(160, alien)
+player2 = Player(575, alien2)
 asteroids = []
 count = 0
 
 # the main while loop of our program, game continues to run until user closes the game tab
 run = True
 while run:
+
     gameClock.tick(75)
     player1.update_speed()
     player2.update_speed()
@@ -132,8 +135,37 @@ while run:
     player1.increaseScore()
     player2.increaseScore()
 
+    # the following if statement displays a "winner" screen after a player reaches 10 points. the game ends.
+
+    if player1.score == 10 or player2.score == 10:
+        pygame.quit()
+        pygame.init()
+        winnerWindow = pygame.display.set_mode((screenWidth, screenHeight))
+        def drawWinner():
+            winnerWindow.blit(trophy, (0, 0))
+
+            winFont = pygame.font.SysFont('geneva', 50)
+            if player1.score == 10:
+                p1Win = winFont.render("PLAYER 1 WINS!", 1, (0, 128, 0))
+                winnerWindow.blit(p1Win, (400 - p1Win.get_width() / 2, 730))
+                winnerWindow.blit(alien, (350, 275))
+            else:
+                p2Win = winFont.render("PLAYER 2 WINS!", 1, (255, 0, 0))
+                winnerWindow.blit(p2Win, (400 - p2Win.get_width() / 2, 730))
+                winnerWindow.blit(alien2, (350, 275))
+            pygame.display.update()
+
+        notQuit = True
+        while notQuit:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    notQuit = False
+            drawWinner()
+        break
+
+
     count += 1
-    if count % 30 == 0:
+    if count % 45 == 0:
         asteroids.append(Asteroid())
 
     for a in asteroids:
@@ -143,7 +175,7 @@ while run:
         elif a.xVelocity < 0 and a.x < -a.width:
             asteroids.pop(asteroids.index(a))
 
-        # check for collisions with aliens here, and resets the corresponding player position to the default positions
+        # checks for collisions with aliens here, and resets the corresponding player position to the default positions
 
         if player1.collide(a):
             asteroids.pop(asteroids.index(a))
@@ -159,7 +191,8 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
-        # depending on which key player 1 or player 2 presses, vertical and horizontal velocity will be calculated accordingly
+
+        # depending on which Key player 1 or player 2 presses, players will move in that direction
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_s:
                 player1.yVelocity = speed
@@ -196,6 +229,9 @@ while run:
                 player2.xVelocity = 0
 
     drawGame()
+
+
+
 
 pygame.quit()
 
